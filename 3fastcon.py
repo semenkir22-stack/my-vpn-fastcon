@@ -11,7 +11,20 @@ REF_LINK = 'https://t.me/obhod_mobilniy_bot?start=ref_7650109118'
 bot = telebot.TeleBot(TOKEN)
 app = Flask('')
 
-# --- ВЕБ-СЕРВЕР ДЛЯ ПИНГА (ЧТОБЫ НЕ СПАЛ НА ХОСТИНГЕ) ---
+# --- КНОПКА ---
+def get_keyboard():
+    markup = types.InlineKeyboardMarkup()
+    btn = types.InlineKeyboardButton(text="Перейти в FastCon", url=REF_LINK)
+    markup.add(btn)
+    return markup
+
+# --- ОТВЕТ НА ВСЁ ---
+@bot.message_handler(func=lambda message: True)
+def redirect_all(message):
+    text = "Привет! Это переходник на бота VPN FastCon, вот он:"
+    bot.send_message(message.chat.id, text, reply_markup=get_keyboard())
+
+# --- СЕРВЕР ДЛЯ РЕНДЕРА ---
 @app.route('/')
 def home():
     return "Бот работает!"
@@ -25,28 +38,7 @@ def keep_alive():
     t.daemon = True
     t.start()
 
-# --- ЛОГИКА БОТА ---
-@bot.message_handler(commands=['start'])
-def start_message(message):
-    # Создаем кнопку-ссылку
-    markup = types.InlineKeyboardMarkup()
-    btn = types.InlineKeyboardButton(text="Перейти в FastCon", url=REF_LINK)
-    markup.add(btn)
-    
-    # Текст сообщения
-    text = "Привет! Это переходник на бота VPN FastCon, вот он:"
-    
-    # Отправка сообщения
-    bot.send_message(message.chat.id, text, reply_markup=markup)
-
-# --- ЗАПУСК ---
 if __name__ == "__main__":
-    print("--- Попытка запуска бота ---")
-    try:
-        keep_alive() 
-        print("Статус: Мини-сервер запущен.")
-        print("Статус: Бот начал опрос Telegram (Polling)...")
-        print("ЗАЙДИ В ТЕЛЕГРАМ И НАПИШИ /start")
-        bot.infinity_polling(timeout=60, long_polling_timeout=5)
-    except Exception as e:
-        print(f"ОШИБКА: {e}")
+    keep_alive()
+    bot.infinity_po
+    lling()
